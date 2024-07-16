@@ -45,40 +45,12 @@ async function initHusky(directory) {
     console.log(
       symbol.error,
       chalk.yellow(
-        '当前文件夹所在目录并不是一个git仓库，代码模板中的husky配置将无效，项目创建完成后，请手动检查并修改husky配置，确保修改正确后再执行pnpm install！'
+        '当前文件夹所在目录并不是一个git仓库，husky配置未生效，请git init之后执行npm run prepare！'
       )
     );
-    console.log(symbol.error, chalk.yellow(result.stderr));
-    modifyHuskyConfig(directory, {
-      huskyInstallStr: 'husky install',
-      preCommitStr: '',
-    });
+    
   } else {
-    const gitRoot = result.stdout.substring(0, result.stdout.length - 1);
-    // console.log('+++ gitRoot');
-    // console.log(gitRoot, gitRoot.length);
-
-    if (directory !== gitRoot) {
-      const other = directory.substring(gitRoot.length);
-      // console.log('+++ other', other);
-      const otherDirectory = other.substring(1);
-      const directoryLevel = otherDirectory.split('/').length;
-      const cdArr = [];
-      for (let i = 0; i < directoryLevel; i++) {
-        cdArr.push('..');
-      }
-      const cdStr = cdArr.join('/');
-      // 修改package.json，修改.husky/pre-commit
-      modifyHuskyConfig(directory, {
-        huskyInstallStr: `cd ${cdStr} && husky install ${otherDirectory}/.husky`,
-        preCommitStr: `cd ${otherDirectory}`,
-      });
-    } else {
-      modifyHuskyConfig(directory, {
-        huskyInstallStr: 'husky install',
-        preCommitStr: '',
-      });
-    }
+    
   }
 }
 
@@ -158,7 +130,6 @@ export const initAction = async (name, option) => {
     }
     const currentDirectory = shell.pwd().stdout.replaceAll('\\', '/');
 
-    // initHusky(name === '.' ? currentDirectory : `${currentDirectory}/${name}`);
 
     let installSuccess = true;
     // 自动安装依赖
@@ -192,7 +163,11 @@ export const initAction = async (name, option) => {
 
     fsExtra.removeSync(`temp_${time}`);
 
+
+
     installSpinner.succeed(chalk.green('项目创建完成'));
+
+    initHusky(name === '.' ? currentDirectory : `${currentDirectory}/${name}`);
   }
 
   return;
