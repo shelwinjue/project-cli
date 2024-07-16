@@ -3,3 +3,4 @@ dist
 build
 public
 .vscode
+.prettierrc.js

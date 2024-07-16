@@ -2,7 +2,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // console.log('+++ env:', process.env.NODE_ENV);
-const env = process.env.NODE_ENV;
 module.exports = {
   entry: path.resolve(__dirname, 'src/index.tsx'),
   output: {
