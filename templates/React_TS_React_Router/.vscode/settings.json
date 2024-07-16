@@ -1,0 +1,35 @@
+{
+	// prettier规则使用当前目录的.prettierrc.js
+	"prettier.configPath": ".prettierrc.js",
+	// 保存的时候自动格式化
+	"editor.formatOnSave": true,
+	"[javascript]": {
+	  "editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascriptreact]": {
+	  "editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+	  "editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescriptreact]": {
+	  "editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+	  "editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[scss]": {
+	  "editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[css]": {
+	  "editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	
+    "editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"eslint.options": {
+		"overrideConfigFile": ".eslintrc.js"
+	},
+	"eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
+}

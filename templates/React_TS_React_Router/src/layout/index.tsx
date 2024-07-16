@@ -6,7 +6,7 @@ function Layout() {
     <>
       <div className={styles.header}>
         <div className={styles.logo} />
-        <div className={styles.text}>数据下载后台管理</div>
+        <div className={styles.text}>demo</div>
       </div>
       <div
         style={{

@@ -1,9 +1,9 @@
 import React from 'react';
 import DataList from '@/components/dataList';
-export default function CreatePage() {
+export default function Home() {
   return (
     <div>
-      <DataList canCreate={false} />
+      <DataList list={['Hello', 'React']} />
     </div>
   );
 }

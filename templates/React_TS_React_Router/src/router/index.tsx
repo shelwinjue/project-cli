@@ -1,26 +1,21 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Layout from '@/layout';
-import CreatePage from '@/pages/create';
-import ViewPage from '@/pages/view';
+import Home from '@/pages/home';
 
 export const router = createBrowserRouter([
   {
-    path: '/data-manage',
-    element: <Layout />,
-    children: [
-      {
-        path: 'create',
-        element: <CreatePage />,
-      },
-      {
-        path: 'view',
-        element: <ViewPage />,
-      },
-    ],
+    path: '/',
+    element: <Navigate to="/home" replace={true} />,
   },
   {
     path: '/',
-    element: <Navigate to="/data-manage/create" replace={true} />,
+    element: <Layout />,
+    children: [
+      {
+        path: 'home',
+        element: <Home />,
+      },
+    ],
   },
 ]);
