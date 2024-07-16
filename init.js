@@ -9,8 +9,7 @@ import symbol from 'log-symbols';
 import inquirer from 'inquirer';
 import clone from './clone.js';
 
-const remote =
-  'https://github.com/shelwinjue/project-cli.git'; // 远端仓库地址
+const remote = 'https://github.com/shelwinjue/project-cli.git'; // 远端仓库地址
 let branch = 'main';
 const registry = 'https://registry.npmmirror.com'; // npm源
 
@@ -48,13 +47,18 @@ async function initHusky(directory) {
         '当前文件夹所在目录并不是一个git仓库，husky配置未生效，请git init之后执行npm run prepare！'
       )
     );
-    
   } else {
-    
   }
 }
 
 export const initAction = async (name, option) => {
+  if (!shell.which('pnpm')) {
+    console.log(
+      symbol.error,
+      'pnpm命令不可用，请先安装pnpm，执行npm install -g pnpm'
+    );
+    shell.exit(1); // 退出
+  }
   // 检查控制台是否可运行git
   if (!shell.which('git')) {
     console.log(symbol.error, 'git命令不可用！');
@@ -116,8 +120,6 @@ export const initAction = async (name, option) => {
       clone: true,
     });
 
-    
-
     // 复制模板
     const originFolder =
       answers.template === 'React_TS_React_Router'
@@ -130,40 +132,41 @@ export const initAction = async (name, option) => {
     }
     const currentDirectory = shell.pwd().stdout.replaceAll('\\', '/');
 
-
     let installSuccess = true;
     // 自动安装依赖
     const installSpinner = ora('正在安装依赖…').start();
     try {
       if (name == '.') {
         if (
-          shell.exec(`npm config set registry ${registry} && npm install`)
+          shell.exec(`npm config set registry ${registry} && pnpm install`)
             .code !== 0
         ) {
           installSuccess = false;
-          console.log(symbol.error, chalk.yellow('自动安装依赖失败，请手动安装'));
+          console.log(
+            symbol.error,
+            chalk.yellow('自动安装依赖失败，请手动安装')
+          );
         }
       } else {
         if (
           shell.exec(
-            `cd ${shell.pwd()}/${name} && npm config set registry ${registry} && npm install`
+            `cd ${shell.pwd()}/${name} && npm config set registry ${registry} && pnpm install`
           ).code !== 0
         ) {
           installSuccess = false;
-          console.log(symbol.error, chalk.yellow('自动安装依赖失败，请手动安装'));
+          console.log(
+            symbol.error,
+            chalk.yellow('自动安装依赖失败，请手动安装')
+          );
         }
       }
-    } catch(err) {
+    } catch (err) {}
 
-    }
-    
     if (installSuccess) {
       installSpinner.succeed(chalk.green('依赖安装完成'));
     }
 
     fsExtra.removeSync(`temp_${time}`);
-
-
 
     installSpinner.succeed(chalk.green('项目创建完成'));
 
