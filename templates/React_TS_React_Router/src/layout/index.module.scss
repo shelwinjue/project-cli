@@ -1,0 +1,19 @@
+@import '@/styles/mixin.scss';
+.header {
+  background: black;
+  height: 72px;
+  color: white;
+  @include flex-row-item-center;
+  .logo {
+    width: 165px;
+    height: 72px;
+    background-image: url('~@/images/logo-white.png');
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+  .text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 20px;
+  }
+}

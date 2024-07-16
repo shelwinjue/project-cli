@@ -159,28 +159,33 @@ export const initAction = async (name, option) => {
     const currentDirectory = shell.pwd().stdout.replaceAll('\\', '/');
 
     // initHusky(name === '.' ? currentDirectory : `${currentDirectory}/${name}`);
-    
+
     let installSuccess = true;
     // 自动安装依赖
     const installSpinner = ora('正在安装依赖…').start();
-    if (name == '.') {
-      if (
-        shell.exec(`npm config set registry ${registry} && pnpm install`)
-          .code !== 0
-      ) {
-        installSuccess = false;
-        console.log(symbol.error, chalk.yellow('自动安装依赖失败，请手动安装'));
+    try {
+      if (name == '.') {
+        if (
+          shell.exec(`npm config set registry ${registry} && npm install`)
+            .code !== 0
+        ) {
+          installSuccess = false;
+          console.log(symbol.error, chalk.yellow('自动安装依赖失败，请手动安装'));
+        }
+      } else {
+        if (
+          shell.exec(
+            `cd ${shell.pwd()}/${name} && npm config set registry ${registry} && npm install`
+          ).code !== 0
+        ) {
+          installSuccess = false;
+          console.log(symbol.error, chalk.yellow('自动安装依赖失败，请手动安装'));
+        }
       }
-    } else {
-      if (
-        shell.exec(
-          `cd ${shell.pwd()}/${name} && npm config set registry ${registry} && pnpm install`
-        ).code !== 0
-      ) {
-        installSuccess = false;
-        console.log(symbol.error, chalk.yellow('自动安装依赖失败，请手动安装'));
-      }
+    } catch(err) {
+
     }
+    
     if (installSuccess) {
       installSpinner.succeed(chalk.green('依赖安装完成'));
     }

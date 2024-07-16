@@ -1,0 +1,25 @@
+@import '@/styles/mixin.scss';
+.wrap {
+  padding: 20px;
+  .searchWrap {
+    @include flex-row-between-center;
+  }
+  .search {
+    width: 300px;
+  }
+  .demandSelect {
+    width: 200px;
+  }
+  .tableData {
+    margin-top: 20px;
+  }
+  .downloadErrorTxt {
+    color: #ff4d4f;
+  }
+  .description {
+    @include ellipsis(3);
+  }
+  .actionFirstBtn {
+    padding-left: 0;
+  }
+}
