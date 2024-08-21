@@ -1,6 +1,6 @@
 {
   "name": "@zjlab-fe/project-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "project init command",
   "main": "cli.js",
   "type": "module",
