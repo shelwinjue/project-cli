@@ -34,5 +34,6 @@ module.exports = {
     'react/jsx-uses-vars': 'error',
     'react/react-in-jsx-scope': 'error',
     'no-var': 'error',
+    '@typescript-eslint/no-unused-vars': ['error'],
   },
 };
