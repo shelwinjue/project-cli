@@ -13,7 +13,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(png|jpe?g)$/,
+        test: /\.(svg|png|jpe?g)$/,
         type: 'asset/resource',
         generator: {
           filename: 'static/[contenthash].[ext]',
