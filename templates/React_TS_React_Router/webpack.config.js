@@ -26,7 +26,9 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              modules: true,
+              modules: {
+                auto: /^((?!node_modules).)*$/,
+              },
             },
           },
           'sass-loader',
