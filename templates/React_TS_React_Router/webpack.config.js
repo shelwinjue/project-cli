@@ -25,14 +25,11 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
-            options: {
-              modules: {
-                auto: /^((?!node_modules).)*$/,
-              },
-            },
+            options: {},
           },
           'sass-loader',
         ],
+        sideEffects: true,
       },
       {
         test: /\.(js|jsx|ts|tsx)$/,
