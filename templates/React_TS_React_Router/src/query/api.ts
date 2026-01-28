@@ -1,8 +1,4 @@
-import axios from 'axios';
-export const API = {
-  /** 查询用户列表 */
-  getUserList: '/api/getUserList',
-};
+import axiosAPI from '@/query/index';
 
 /**
  * 接口请求成功时的响应类型
@@ -16,28 +12,24 @@ type ResponseSuccess<T> = {
   };
 };
 
-/** 查询用户列表入参类型 */
-type GetUserListRequest = {
-  pageSize: number;
-  pageIndex: number;
+/** 查询用户信息入参类型 */
+type GetUserInfoRequest = {
+  isGuestMode?: boolean;
 };
 
-/** 查询用户列表返回的数据类型定义 */
-export type GetUserListModel = {
-  total: number;
-  list: User[];
-};
-export type User = {
+/** 用户信息类型 */
+export type IUserInfo = {
   name: string;
-  age: number;
-  gender: string;
+  email: string;
 };
 
 /**
- * 获取用户列表
+ * 获取用户信息
  * @param requestData
  * @returns
  */
-export function getUserList(requestData: GetUserListRequest): Promise<ResponseSuccess<GetUserListModel>> {
-  return axios.post(API.getUserList, requestData);
+export function getUserInfo(requestData: GetUserInfoRequest): Promise<ResponseSuccess<IUserInfo>> {
+  return axiosAPI.get('/api/getUserInfo', {
+    params: requestData,
+  });
 }

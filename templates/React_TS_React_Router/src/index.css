@@ -6,6 +6,104 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  font-family: 'PingFangSC-Medium', 'PingFang SC Medium', 'PingFang SC',
-    sans-serif;
+  font-family: 'PingFangSC-Medium', 'PingFang SC Medium', 'PingFang SC', sans-serif;
+}
+
+div {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'hub-iconfont'; /* Project id 4752387 */
+  src:
+    url('//at.alicdn.com/t/c/font_4752387_udn1egaiv3h.woff2?t=1768981548015') format('woff2'),
+    url('//at.alicdn.com/t/c/font_4752387_udn1egaiv3h.woff?t=1768981548015') format('woff'),
+    url('//at.alicdn.com/t/c/font_4752387_udn1egaiv3h.ttf?t=1768981548015') format('truetype');
+}
+
+@font-face {
+  font-family: 'AlibabaPuHuiTi-3-35-Thin';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-35-Thin.ttf')
+    format('truetype');
+}
+@font-face {
+  font-family: 'AlibabaPuHuiTi-3-45-Light';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-45-Light.ttf')
+    format('truetype');
+}
+@font-face {
+  /** 对应字重 400 */
+  font-family: 'AlibabaPuHuiTi-3-55-Regular';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-55-Regular.ttf')
+    format('truetype');
+}
+@font-face {
+  font-family: 'AlibabaPuHuiTi-3-55-RegularL3';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-55-RegularL3.ttf')
+    format('truetype');
+}
+@font-face {
+  /** 对应字重 500 */
+  font-family: 'AlibabaPuHuiTi-3-65-Medium';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-65-Medium.ttf')
+    format('truetype');
+}
+@font-face {
+  /** 对应字重 600 */
+  font-family: 'AlibabaPuHuiTi-3-75-SemiBold';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-75-SemiBold.ttf')
+    format('truetype');
+}
+@font-face {
+  font-family: 'AlibabaPuHuiTi-3-85-Bold';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-85-Bold.ttf')
+    format('truetype');
+}
+@font-face {
+  font-family: 'AlibabaPuHuiTi-3-95-ExtraBold';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-95-ExtraBold.ttf')
+    format('truetype');
+}
+@font-face {
+  font-family: 'AlibabaPuHuiTi-3-105-Heavy';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-105-Heavy.ttf')
+    format('truetype');
+}
+@font-face {
+  font-family: 'AlibabaPuHuiTi-3-115-Black';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-115-Black.ttf')
+    format('truetype');
+}
+
+@font-face {
+  /* 字重700 */
+  font-family: 'Be Vietnam Pro Bold';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/Be_Vietnam_Pro/BeVietnamPro-Bold.ttf')
+    format('truetype');
+}
+
+.ant-modal-confirm-content {
+  img {
+    max-width: 100% !important;
+  }
+}
+
+div,
+ul,
+ol,
+main {
+  scrollbar-width: thin;
+  scrollbar-color: #d9e0ed #f4f6fa;
+}
+
+/* 全局 CSS变量  */
+:root {
+  /* 颜色变量（主题/通用） */
+  --color-primary: #1775fe; /* 主色 */
+  --color-white: #ffffff;
+  --color-text: #333333;
+  --color-text-placeholder: #999999;
+  --color-tip: #8c8c8c;
+  --color-error: #ff4d4f;
+  --color-warning: #faad14;
 }

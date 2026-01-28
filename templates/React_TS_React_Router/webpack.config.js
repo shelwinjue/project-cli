@@ -68,7 +68,8 @@ module.exports = {
       {
         context: ['/api'],
         // target: 'http://10.15.24.159:8090',
-        target: 'http://10.200.48.73:30005',
+        target: 'https://m1.apifoxmock.com/m1/7025868-6744668-default',
+        changeOrigin: true,
         // target: 'http://10.101.96.28:8082/api/apimock-v2/d78a52c482b9a8890a7f87bd7d6f5d08',
         // 'http://10.15.24.159:8090',
       },

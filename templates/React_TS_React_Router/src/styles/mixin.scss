@@ -21,11 +21,7 @@
   align-items: center;
 }
 
-@mixin flex-custom(
-  $direction: row,
-  $alignItem: center,
-  $justifyContent: center
-) {
+@mixin flex-custom($direction: row, $alignItem: center, $justifyContent: center) {
   display: flex;
   flex-direction: $direction;
   justify-content: $justifyContent;
