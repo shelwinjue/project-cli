@@ -99,7 +99,7 @@ export const initAction = async (name, option) => {
   let appNameQuestions = [
     {
       type: 'input',
-      message: '请输入部署应用名称',
+      message: '请输入部署应用的名称',
       name: 'appName',
       default: defaultAppName
     }
