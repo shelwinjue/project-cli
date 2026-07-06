@@ -182,12 +182,12 @@ export const initAction = async (name, option) => {
     if (answers.template === 'Vite_TS_React_Router') {
       const targetDir = name === '.' ? '.' : name;
       const targetPath = `${currentDirectory}/${targetDir}`;
-      const pkgPath = `${targetPath}/package.json`;
-      const packageJson = JSON.parse(fsExtra.readFileSync(pkgPath, 'utf8'));
-      if (packageJson.scripts && packageJson.scripts.build) {
-        packageJson.scripts.build = `VITE_APP_BASE=/${appName} ${packageJson.scripts.build}`;
-        fsExtra.writeFileSync(pkgPath, JSON.stringify(packageJson, null, 2));
-      }
+
+      // 创建 .env 文件，设置 VITE_APP_BASE
+      fsExtra.writeFileSync(
+        `${targetPath}/.env`,
+        `VITE_APP_BASE=/${appName}\n`
+      );
 
       // 替换 deploy 目录下所有文件中的 ${APP_NAME}
       const deployDir = `${targetPath}/deploy`;
