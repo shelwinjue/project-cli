@@ -183,11 +183,16 @@ export const initAction = async (name, option) => {
       const targetDir = name === '.' ? '.' : name;
       const targetPath = `${currentDirectory}/${targetDir}`;
 
-      // 创建 .env 文件，设置 VITE_APP_BASE
-      fsExtra.writeFileSync(
-        `${targetPath}/.env`,
-        `VITE_APP_BASE=/${appName}\n`
-      );
+      // 替换 vite.config.ts 中的 ${APP_NAME}
+      const viteConfigPath = `${targetPath}/vite.config.ts`;
+      if (fsExtra.existsSync(viteConfigPath)) {
+        let viteConfigContent = fsExtra.readFileSync(viteConfigPath, 'utf8');
+        viteConfigContent = viteConfigContent.replaceAll(
+          '${APP_NAME}',
+          appName
+        );
+        fsExtra.writeFileSync(viteConfigPath, viteConfigContent);
+      }
 
       // 替换 deploy 目录下所有文件中的 ${APP_NAME}
       const deployDir = `${targetPath}/deploy`;

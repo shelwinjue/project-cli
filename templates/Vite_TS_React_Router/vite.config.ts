@@ -24,7 +24,7 @@ export default defineConfig({
       },
     },
   },
-  base: process.env.VITE_APP_BASE || '/',
+  base: '/${APP_NAME}',
   build: {
     outDir: 'build',
     sourcemap: false,
