@@ -1,0 +1,43 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: white;
+  color: #1f1f1f;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    sans-serif;
+}
+
+@font-face {
+  /** 对应字重 400 */
+  font-family: 'Alibaba PuHuiTi 3.0';
+  src: url('https://haina-datahub.zero2x.org/ossRoute/frontend/resources/fonts/alibaba_puhuiti_3/AlibabaPuHuiTi-3-55-Regular.ttf')
+    format('truetype');
+}
+
+@font-face {
+  font-family: 'hub-iconfont'; /* Project id 4752387 */
+  src:
+    url('//at.alicdn.com/t/c/font_4752387_wd2j9wp0jaa.woff2?t=1782197440777') format('woff2'),
+    url('//at.alicdn.com/t/c/font_4752387_wd2j9wp0jaa.woff?t=1782197440777') format('woff'),
+    url('//at.alicdn.com/t/c/font_4752387_wd2j9wp0jaa.ttf?t=1782197440777') format('truetype');
+}
+
+div,
+ul,
+ol,
+main,
+textarea,
+pre {
+  scrollbar-width: thin;
+  scrollbar-color: #d9e0ed #f4f6fa;
+}

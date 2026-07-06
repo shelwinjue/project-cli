@@ -22,13 +22,13 @@ const registry = 'https://registry.npmmirror.com'; // npm源
  */
 function modifyHuskyConfig(directory, options) {
   let packageStr = fsExtra.readFileSync(`${directory}/package.json`, {
-    encoding: 'utf8',
+    encoding: 'utf8'
   });
   packageStr = packageStr.replace('${husky install}', options.huskyInstallStr);
   fsExtra.writeFileSync(`${directory}/package.json`, packageStr);
 
   let preCommitStr = fsExtra.readFileSync(`${directory}/.husky/pre-commit`, {
-    encoding: 'utf8',
+    encoding: 'utf8'
   });
   preCommitStr = preCommitStr.replace('${cd dir}', options.preCommitStr);
   fsExtra.writeFileSync(`${directory}/.husky/pre-commit`, preCommitStr);
@@ -89,6 +89,51 @@ export const initAction = async (name, option) => {
     }
   }
 
+  // 确定默认的部署应用名称
+  const defaultAppName =
+    name === '.'
+      ? shell.pwd().stdout.replaceAll('\\', '/').split('/').pop()
+      : name;
+
+  // 让用户确认部署应用名称
+  let appNameQuestions = [
+    {
+      type: 'input',
+      message: '请输入部署应用名称',
+      name: 'appName',
+      default: defaultAppName
+    }
+  ];
+  let appNameAnswers = await inquirer.prompt(appNameQuestions);
+  const appName = appNameAnswers.appName;
+
+  if (appName.match(/[^a-z0-9_-]/g)) {
+    console.log(
+      symbol.error,
+      '应用名称存在非法字符！请确保只包含小写字母、数字、下划线和中划线'
+    );
+    return;
+  }
+
+  // 让用户输入远程git仓库url
+  let gitUrlQuestions = [
+    {
+      type: 'input',
+      message: '请输入远程git仓库地址',
+      name: 'gitUrl',
+      default: '',
+      validate: (input) => {
+        if (!input) return 'git仓库地址不能为空';
+        if (!/^https?:\/\/.+/.test(input)) {
+          return '请输入合法的git仓库地址（以 http:// 或 https:// 开头）';
+        }
+        return true;
+      }
+    }
+  ];
+  let gitUrlAnswers = await inquirer.prompt(gitUrlQuestions);
+  const gitUrl = gitUrlAnswers.gitUrl;
+
   // 下载完毕后，定义自定义问题
   let questions = [
     {
@@ -97,8 +142,12 @@ export const initAction = async (name, option) => {
       name: 'template',
       choices: [
         { name: 'React + TS + React Router', value: 'React_TS_React_Router' },
-      ],
-    },
+        {
+          name: 'Vite + TS + React + React Router',
+          value: 'Vite_TS_React_Router'
+        }
+      ]
+    }
   ];
   // 通过inquirer获取用户输入的回答
   let answers = await inquirer.prompt(questions);
@@ -117,20 +166,63 @@ export const initAction = async (name, option) => {
 
     // 下载模板
     await clone(`direct:${remote}`, `temp_${time}`, {
-      clone: true,
+      clone: true
     });
 
     // 复制模板
-    const originFolder =
-      answers.template === 'React_TS_React_Router'
-        ? `temp_${time}/templates/React_TS_React_Router`
-        : '';
+    const originFolder = `temp_${time}/templates/${answers.template}`;
     if (name === '.') {
       fsExtra.copySync(originFolder, '.');
     } else {
       fsExtra.copySync(originFolder, name);
     }
     const currentDirectory = shell.pwd().stdout.replaceAll('\\', '/');
+
+    // 如果是 Vite 模板，根据 appName 设置 base
+    if (answers.template === 'Vite_TS_React_Router') {
+      const targetDir = name === '.' ? '.' : name;
+      const targetPath = `${currentDirectory}/${targetDir}`;
+      const pkgPath = `${targetPath}/package.json`;
+      const packageJson = JSON.parse(fsExtra.readFileSync(pkgPath, 'utf8'));
+      if (packageJson.scripts && packageJson.scripts.build) {
+        packageJson.scripts.build = `VITE_APP_BASE=/${appName} ${packageJson.scripts.build}`;
+        fsExtra.writeFileSync(pkgPath, JSON.stringify(packageJson, null, 2));
+      }
+
+      // 替换 deploy 目录下所有文件中的 ${APP_NAME}
+      const deployDir = `${targetPath}/deploy`;
+      if (fsExtra.existsSync(deployDir)) {
+        // 先替换 Jenkinsfile 中的 GIT_URL
+        const jenkinsfilePath = `${deployDir}/Jenkinsfile`;
+        if (fsExtra.existsSync(jenkinsfilePath) && gitUrl) {
+          let jenkinsContent = fsExtra.readFileSync(jenkinsfilePath, 'utf8');
+          jenkinsContent = jenkinsContent.replace(
+            "'https://gitlab.zhejianglab.com/research-center-for-data-hub-and-security/platform/frontend/${APP_NAME}.git'",
+            `'${gitUrl}'`
+          );
+          fsExtra.writeFileSync(jenkinsfilePath, jenkinsContent);
+        }
+
+        // 再替换所有文件中的 ${APP_NAME}
+        function replaceAppName(dir) {
+          const files = fsExtra.readdirSync(dir);
+          files.forEach((file) => {
+            const filePath = `${dir}/${file}`;
+            const stat = fsExtra.statSync(filePath);
+            if (stat.isDirectory()) {
+              replaceAppName(filePath);
+            } else {
+              let content = fsExtra.readFileSync(filePath, 'utf8');
+              if (content.includes('${APP_NAME}')) {
+                content = content.replaceAll('${APP_NAME}', appName);
+                fsExtra.writeFileSync(filePath, content);
+              }
+            }
+          });
+        }
+        replaceAppName(deployDir);
+      }
+    }
 
     let installSuccess = true;
     // 自动安装依赖

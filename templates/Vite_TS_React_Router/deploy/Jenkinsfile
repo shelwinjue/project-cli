@@ -1,0 +1,27 @@
+@Library('common-pipeline-library') _
+
+
+def params = [
+    GIT_URL: 'https://gitlab.zhejianglab.com/research-center-for-data-hub-and-security/platform/frontend/${APP_NAME}.git',
+    GIT_CREDENTIALS_ID: 'zhusw-fe',
+    NODE_VERSION: '22.3.0',
+    BRANCH_SPECIFIC_SETTINGS: [
+        'dev': [
+            DOCKER_FILE_PATH: 'deploy/docker/Dockerfile',
+            DOCKER_IMAGE: 'cr.registry.res.cloud.zhejianglab.com/datahub/${APP_NAME}',
+            DOCKER_REGISTRY_CREDENTIALS_ID: 'zjlab-ft-acr',
+            DOCKER_REGISTRY: 'cr.registry.res.cloud.zhejianglab.com',
+            KUBE_CONFIG_CREDENTIALS_ID: 'zjfe-ddeCloud-dev-cluster-config',
+            KUBENETES_MANIFESTS_PATH: 'deploy/k8s/manifests-dev'
+        ],
+        'master': [
+            DOCKER_FILE_PATH: 'deploy/docker/Dockerfile',
+            DOCKER_IMAGE: 'cr.registry.res.cloud.zhejianglab.com/datahub/${APP_NAME}',
+            DOCKER_REGISTRY_CREDENTIALS_ID: 'zjlab-ft-acr',
+            DOCKER_REGISTRY: 'cr.registry.res.cloud.zhejianglab.com',
+            KUBE_CONFIG_CREDENTIALS_ID: 'zjft-cluster-config',
+            KUBENETES_MANIFESTS_PATH: 'deploy/k8s/manifests-prod'
+        ]
+    ]
+]
+nodeNpmDockerK8sMultiBranchPipeline.call(params)
