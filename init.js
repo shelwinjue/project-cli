@@ -7,11 +7,71 @@ import shell from 'shelljs';
 import chalk from 'chalk';
 import symbol from 'log-symbols';
 import inquirer from 'inquirer';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import clone from './clone.js';
+import { createAgentProject, prepareAgentProject } from './create-agent.js';
 
 const remote = 'https://github.com/shelwinjue/project-cli.git'; // 远端仓库地址
 let branch = 'main';
 const registry = 'https://registry.npmmirror.com'; // npm源
+const currentModuleDirectory = path.dirname(fileURLToPath(import.meta.url));
+const agentTemplateDirectory = path.join(
+  currentModuleDirectory,
+  'templates',
+  'Mastra_Nest_Agent'
+);
+
+export const initAgentAction = async (name, option) => {
+  try {
+    await prepareAgentProject({
+      cwd: process.cwd(),
+      projectArgument: name,
+      templateDirectory: agentTemplateDirectory
+    });
+
+    let gitUrl = option.gitUrl?.trim();
+    if (gitUrl === undefined) {
+      const answer = await inquirer.prompt([
+        {
+          type: 'input',
+          message: '请输入远程 Git 仓库地址（可留空）',
+          name: 'gitUrl',
+          default: ''
+        }
+      ]);
+      gitUrl = answer.gitUrl.trim();
+    }
+
+    const result = await createAgentProject({
+      cwd: process.cwd(),
+      projectArgument: name,
+      gitUrl,
+      templateDirectory: agentTemplateDirectory
+    });
+
+    console.log();
+    console.log(symbol.success, chalk.green(`Agent 项目创建完成：${result.targetDirectory}`));
+    console.log();
+    console.log('后续操作：');
+    if (name) console.log(`  cd ${name}`);
+    console.log('  npm install');
+    console.log('  将 .env.example 复制为 .env，并填写运行环境配置');
+    console.log('  npm run start:dev');
+
+    if (!gitUrl) {
+      console.log();
+      console.log(
+        symbol.warning,
+        chalk.yellow('请在 deploy/Jenkinsfile 中替换 ${YOUR_GIT_URL}')
+      );
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.log(symbol.error, chalk.red(message));
+    process.exitCode = 1;
+  }
+};
 
 /**
  * 修改package.json，修改.husky/pre-commit
