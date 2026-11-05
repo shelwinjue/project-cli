@@ -1,0 +1,28 @@
+@Library('common-pipeline-library') _
+
+def params = [
+    GIT_URL: '${YOUR_GIT_URL}',
+    GIT_CREDENTIALS_ID: '2e7d89d9-294a-4c2f-9ec4-4628fa99b79a',
+    NODE_VERSION: '22.22.0',
+    NPM_REGISTRY: '--registry https://registry.npmmirror.com',
+    BRANCH_SPECIFIC_SETTINGS: [
+        'dev': [
+            DOCKER_FILE_PATH: 'deploy/docker/Dockerfile',
+            DOCKER_IMAGE: 'cr.registry.res.cloud.zhejianglab.com/datahub/${YOUR_PROJECT_NAME}',
+            DOCKER_REGISTRY_CREDENTIALS_ID: 'zjlab-ft-acr',
+            DOCKER_REGISTRY: 'cr.registry.res.cloud.zhejianglab.com',
+            KUBE_CONFIG_CREDENTIALS_ID: 'zjfe-ddeCloud-dev-cluster-config',
+            KUBENETES_MANIFESTS_PATH: 'deploy/k8s/manifests-dev'
+        ],
+        'master': [
+            DOCKER_FILE_PATH: 'deploy/docker/Dockerfile',
+            DOCKER_IMAGE: 'cr.registry.res.cloud.zhejianglab.com/datahub/${YOUR_PROJECT_NAME}',
+            DOCKER_REGISTRY_CREDENTIALS_ID: 'zjlab-ft-acr',
+            DOCKER_REGISTRY: 'cr.registry.res.cloud.zhejianglab.com',
+            KUBE_CONFIG_CREDENTIALS_ID: 'zjft-cluster-config',
+            KUBENETES_MANIFESTS_PATH: 'deploy/k8s/manifests-prod'
+        ]
+    ]
+]
+
+nodeNpmDockerK8sMultiBranchPipeline.call(params)
