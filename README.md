@@ -13,21 +13,24 @@
 创建一个新目录，并在其中生成 NestJS + Mastra Agent 项目：
 
 ```bash
-npx @zjlab-fe/project-cli create-agent knowledge-agent
+npx @zjlab-fe/project-cli create-agent knowledge-agent --prefix knowledge-agent
 ```
 
 不传项目名时，直接在当前空目录中生成项目。当前目录可以已经包含 `.git`：
 
 ```bash
-npx @zjlab-fe/project-cli create-agent
+npx @zjlab-fe/project-cli create-agent --prefix knowledge-agent
 ```
 
 可以通过参数提供 Jenkins 使用的 Git 仓库地址：
 
 ```bash
 npx @zjlab-fe/project-cli create-agent knowledge-agent \
+  --prefix knowledge-agent \
   --git-url https://gitlab.example.com/team/knowledge-agent.git
 ```
+
+`--prefix` 用于统一生成 `/api/<prefix>/chat`、`/api/<prefix>/conversation` 等业务接口前缀，以及 `/api/<prefix>/mastra-studio`。前缀只能包含小写字母、数字和中划线，不能包含 `/`。没有传入该参数时，CLI 会提示“请输入业务前缀”。
 
 没有传入 `--git-url` 时，CLI 只会询问 Git 仓库地址，并允许留空。CLI 不会自动安装依赖，也不会创建 `.env`。
 

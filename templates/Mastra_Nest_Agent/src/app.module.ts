@@ -5,6 +5,7 @@ import { MastraModule } from '@mastra/nestjs';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import configuration from './config/configuration';
+import { MASTRA_STUDIO_ROUTE_PREFIX } from './agent/agent.constants';
 import { mastra } from './mastra';
 
 @Module({
@@ -28,7 +29,7 @@ import { mastra } from './mastra';
      */
     MastraModule.register({
       mastra,
-      prefix: '/api/mastra',
+      prefix: MASTRA_STUDIO_ROUTE_PREFIX,
       rateLimitOptions: {
         enabled: false,
       },

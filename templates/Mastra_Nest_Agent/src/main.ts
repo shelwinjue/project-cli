@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
+import { AGENT_ROUTE_PREFIX, MASTRA_STUDIO_ROUTE_PREFIX } from './agent/agent.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -43,7 +44,8 @@ async function bootstrap() {
   await app.listen(port);
 
   console.log(`NestJS server is running at http://localhost:${port}`);
-  console.log(`Mastra API is available at http://localhost:${port}/api/mastra`);
+  console.log(`Agent business API prefix: http://localhost:${port}/api/${AGENT_ROUTE_PREFIX}`);
+  console.log(`Mastra Studio API: http://localhost:${port}${MASTRA_STUDIO_ROUTE_PREFIX}`);
 }
 
 void bootstrap();

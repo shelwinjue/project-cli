@@ -15,7 +15,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node build/main.js",
-    "mastra:studio": "mastra studio --port 4111",
+    "mastra:studio": "mastra studio --port 4111 --server-host localhost --server-port 3000 --server-protocol http --server-api-prefix /api/${YOUR_AGENT_PREFIX}/mastra-studio",
     "mastra:build": "mastra build"
   },
   "dependencies": {
