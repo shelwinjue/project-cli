@@ -10,6 +10,7 @@ import {
 import { basename, extname, join, resolve } from "node:path";
 
 const PROJECT_NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+const AGENT_PREFIX_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const EXCLUDED_DIRECTORIES = new Set([
   "node_modules",
   "build",
@@ -36,6 +37,14 @@ export function validateAgentProjectName(projectName) {
   if (!PROJECT_NAME_PATTERN.test(projectName)) {
     throw new Error(
       `项目名称“${projectName}”不合法，请使用小写字母、数字和中划线，且长度不能超过 63 个字符`,
+    );
+  }
+}
+
+export function validateAgentPrefix(prefix) {
+  if (!AGENT_PREFIX_PATTERN.test(prefix)) {
+    throw new Error(
+      `接口前缀“${prefix}”不合法，请使用小写字母、数字和中划线，且不要包含 /，长度不能超过 63 个字符`,
     );
   }
 }
@@ -97,10 +106,12 @@ async function replaceTemplateValues(directory, replacements) {
 export async function prepareAgentProject({
   cwd,
   projectArgument,
+  prefix,
   templateDirectory,
 }) {
   const projectName = projectArgument ?? basename(resolve(cwd));
   validateAgentProjectName(projectName);
+  validateAgentPrefix(prefix);
 
   const templateStat = await stat(templateDirectory);
   if (!templateStat.isDirectory()) {
@@ -119,11 +130,13 @@ export async function createAgentProject({
   cwd,
   projectArgument,
   gitUrl,
+  prefix,
   templateDirectory,
 }) {
   const plan = await prepareAgentProject({
     cwd,
     projectArgument,
+    prefix,
     templateDirectory,
   });
   await mkdir(plan.targetDirectory, { recursive: true });
@@ -144,6 +157,7 @@ export async function createAgentProject({
   const replacements = [
     ["${YOUR_PROJECT_NAME}", plan.projectName],
     ["${YOUR_DATABASE_NAME}", databaseName],
+    ["${YOUR_AGENT_PREFIX}", prefix],
     ["mastra-nest-agent-starter", plan.projectName],
     ["MYSQL_DATABASE=agent_app", `MYSQL_DATABASE=${databaseName}`],
   ];
@@ -154,5 +168,10 @@ export async function createAgentProject({
 
   await replaceTemplateValues(plan.targetDirectory, replacements);
 
-  return { ...plan, databaseName };
+  return {
+    ...plan,
+    databaseName,
+    prefix,
+    mastraStudioPrefix: `/api/${prefix}/mastra-studio`,
+  };
 }

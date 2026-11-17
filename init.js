@@ -10,7 +10,11 @@ import inquirer from 'inquirer';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import clone from './clone.js';
-import { createAgentProject, prepareAgentProject } from './create-agent.js';
+import {
+  createAgentProject,
+  prepareAgentProject,
+  validateAgentPrefix
+} from './create-agent.js';
 
 const remote = 'https://github.com/shelwinjue/project-cli.git'; // 远端仓库地址
 let branch = 'main';
@@ -24,9 +28,30 @@ const agentTemplateDirectory = path.join(
 
 export const initAgentAction = async (name, option) => {
   try {
+    let prefix = option.prefix?.trim();
+    if (prefix === undefined) {
+      const answer = await inquirer.prompt([
+        {
+          type: 'input',
+          message: '请输入业务前缀',
+          name: 'prefix',
+          validate: (input) => {
+            try {
+              validateAgentPrefix(input.trim());
+              return true;
+            } catch (error) {
+              return error instanceof Error ? error.message : String(error);
+            }
+          }
+        }
+      ]);
+      prefix = answer.prefix.trim();
+    }
+
     await prepareAgentProject({
       cwd: process.cwd(),
       projectArgument: name,
+      prefix,
       templateDirectory: agentTemplateDirectory
     });
 
@@ -47,6 +72,7 @@ export const initAgentAction = async (name, option) => {
       cwd: process.cwd(),
       projectArgument: name,
       gitUrl,
+      prefix,
       templateDirectory: agentTemplateDirectory
     });
 
@@ -58,6 +84,8 @@ export const initAgentAction = async (name, option) => {
     console.log('  npm install');
     console.log('  将 .env.example 复制为 .env，并填写运行环境配置');
     console.log('  npm run start:dev');
+    console.log(`  业务 API 前缀：/api/${result.prefix}`);
+    console.log(`  Mastra Studio API 前缀：${result.mastraStudioPrefix}`);
 
     if (!gitUrl) {
       console.log();

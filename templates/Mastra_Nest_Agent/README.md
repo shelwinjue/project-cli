@@ -16,7 +16,8 @@
 
 - NestJS 服务入口
 - Mastra NestJS Adapter
-- 固定为 `/api/mastra` 的 Mastra API 前缀
+- 创建项目时指定的 Agent 业务 API 前缀
+- 与业务前缀一致的 `/api/${YOUR_AGENT_PREFIX}/mastra-studio` Mastra API 前缀
 - 每分钟 3600 次的 NestJS 全局限流
 - `zj-computility/model-name` 两段式模型路由
 - MySQL Mastra Storage
@@ -54,6 +55,19 @@ ${YOUR_GIT_URL}       项目 GitLab 地址
 - `package.json` 中的项目名称和描述
 - `src/mastra/observability.ts` 中的 `serviceName`
 - `src/mastra/agents/example-agent.ts` 中的 Agent 配置
+- `src/agent/agent.constants.ts` 中生成后的统一路由前缀
+
+业务 Controller 统一复用 `AGENT_ROUTE_PREFIX`，例如：
+
+```ts
+@Controller(`${AGENT_ROUTE_PREFIX}/chat`)
+export class ChatController {}
+
+@Controller(`${AGENT_ROUTE_PREFIX}/conversation`)
+export class ConversationController {}
+```
+
+NestJS 的全局前缀为 `api`，因此上面的接口最终分别位于 `/api/${YOUR_AGENT_PREFIX}/chat` 和 `/api/${YOUR_AGENT_PREFIX}/conversation`。业务模块必须注册在 `MastraModule` 之前，避免 Mastra Adapter 的 catch-all 路由吞掉业务接口。
 
 ## 安装依赖
 
@@ -97,10 +111,16 @@ npm run start:dev
 http://localhost:3000
 ```
 
-Mastra API：
+Agent 业务 API 前缀：
 
 ```text
-http://localhost:3000/api/mastra
+http://localhost:3000/api/${YOUR_AGENT_PREFIX}
+```
+
+Mastra Studio API：
+
+```text
+http://localhost:3000/api/${YOUR_AGENT_PREFIX}/mastra-studio
 ```
 
 ## 启动 Mastra Studio
@@ -115,7 +135,7 @@ npm run mastra:studio
 脚本执行的完整命令是：
 
 ```bash
-mastra studio --port 4111
+mastra studio --port 4111 --server-host localhost --server-port 3000 --server-protocol http --server-api-prefix /api/${YOUR_AGENT_PREFIX}/mastra-studio
 ```
 
 Studio 地址：
@@ -128,13 +148,13 @@ http://localhost:4111
 
 ```text
 Mastra instance URL: http://localhost:3000    // 3000是nest启动端口号
-API prefix: /api/mastra
+API prefix: /api/${YOUR_AGENT_PREFIX}/mastra-studio
 ```
 
 如需在命令中直接指定 NestJS 服务连接，可以运行：
 
 ```bash
-mastra studio --port 4111 --server-host localhost --server-port 3000 --server-protocol http --server-api-prefix /api/mastra
+mastra studio --port 4111 --server-host localhost --server-port 3000 --server-protocol http --server-api-prefix /api/${YOUR_AGENT_PREFIX}/mastra-studio
 ```
 
 ## 模型配置约定
