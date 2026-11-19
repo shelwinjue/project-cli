@@ -75,6 +75,28 @@ NestJS 的全局前缀为 `api`，因此上面的接口最终分别位于 `/api/
 npm install
 ```
 
+安装依赖后，`postinstall` 会扫描 `node_modules/@mastra/*/dist/docs/SKILL.md`，把每个包内置的 Mastra Skill 链接到创建项目时通过 `--agent` 选择的目录：
+
+```text
+${YOUR_CODING_AGENT} -> ${YOUR_AGENT_SKILLS_DIRECTORY}
+```
+
+Agent 名称和项目级目录遵循 [`skills` CLI 的支持列表](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)。Windows 使用 junction，其他系统使用目录 symlink，因此不会复制 `node_modules` 中的文档。重复执行 `npm install` 会复用正确链接，并清理已经卸载的 Mastra 包所对应的失效链接；如果目标位置存在同名真实文件或目录，安装会失败并保留原内容。
+
+如需在项目创建后把 Mastra Skills 链接到另一个 Agent，可以运行：
+
+```bash
+npm run add-skill --agent=codex,cursor
+```
+
+也可以使用 npm 标准的参数分隔写法：
+
+```bash
+npm run add-skill -- --agent=codex,cursor
+```
+
+`--agent` 支持 `codex`、`trae`、`cursor` 和 `github-copilot`。需要安装到多个 Agent 时使用逗号分隔，例如 `--agent=codex,cursor,trae`。
+
 将环境变量示例复制为本地环境文件：
 
 ```bash

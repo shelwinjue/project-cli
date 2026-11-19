@@ -8,6 +8,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { basename, extname, join, resolve } from "node:path";
+import { getCodingAgent } from "./coding-agents.js";
 
 const PROJECT_NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const AGENT_PREFIX_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
@@ -20,6 +21,7 @@ const EXCLUDED_DIRECTORIES = new Set([
 const TEXT_EXTENSIONS = new Set([
   ".ts",
   ".js",
+  ".mjs",
   ".json",
   ".md",
   ".yaml",
@@ -31,6 +33,7 @@ const TEXT_FILE_NAMES = new Set([
   ".prettierrc",
   "Dockerfile",
   "Jenkinsfile",
+  ".gitignore",
 ]);
 
 export function validateAgentProjectName(projectName) {
@@ -47,6 +50,29 @@ export function validateAgentPrefix(prefix) {
       `接口前缀“${prefix}”不合法，请使用小写字母、数字和中划线，且不要包含 /，长度不能超过 63 个字符`,
     );
   }
+}
+
+export function validateCodingAgent(codingAgent) {
+  if (!getCodingAgent(codingAgent)) {
+    throw new Error(
+      `Agent“${codingAgent}”不受支持，请使用 codex、trae、cursor 或 github-copilot`,
+    );
+  }
+}
+
+export function parseCodingAgents(codingAgents) {
+  const values = codingAgents
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (values.length === 0) {
+    throw new Error("请至少选择一个 Agent");
+  }
+
+  const uniqueValues = [...new Set(values)];
+  uniqueValues.forEach(validateCodingAgent);
+  return uniqueValues;
 }
 
 function shouldCopyTemplateEntry(sourcePath) {
@@ -107,11 +133,13 @@ export async function prepareAgentProject({
   cwd,
   projectArgument,
   prefix,
+  codingAgent,
   templateDirectory,
 }) {
   const projectName = projectArgument ?? basename(resolve(cwd));
   validateAgentProjectName(projectName);
   validateAgentPrefix(prefix);
+  parseCodingAgents(codingAgent);
 
   const templateStat = await stat(templateDirectory);
   if (!templateStat.isDirectory()) {
@@ -131,12 +159,14 @@ export async function createAgentProject({
   projectArgument,
   gitUrl,
   prefix,
+  codingAgent,
   templateDirectory,
 }) {
   const plan = await prepareAgentProject({
     cwd,
     projectArgument,
     prefix,
+    codingAgent,
     templateDirectory,
   });
   await mkdir(plan.targetDirectory, { recursive: true });
@@ -154,10 +184,19 @@ export async function createAgentProject({
   );
 
   const databaseName = plan.projectName.replaceAll("-", "_");
+  const codingAgents = parseCodingAgents(codingAgent);
+  const normalizedCodingAgents = codingAgents.join(",");
+  const skillsDirectories = [
+    ...new Set(
+      codingAgents.map((agent) => getCodingAgent(agent).skillsDirectory),
+    ),
+  ];
   const replacements = [
     ["${YOUR_PROJECT_NAME}", plan.projectName],
     ["${YOUR_DATABASE_NAME}", databaseName],
     ["${YOUR_AGENT_PREFIX}", prefix],
+    ["${YOUR_CODING_AGENT}", normalizedCodingAgents],
+    ["${YOUR_AGENT_SKILLS_DIRECTORY}", skillsDirectories.join(", ")],
     ["mastra-nest-agent-starter", plan.projectName],
     ["MYSQL_DATABASE=agent_app", `MYSQL_DATABASE=${databaseName}`],
   ];
@@ -172,6 +211,8 @@ export async function createAgentProject({
     ...plan,
     databaseName,
     prefix,
+    codingAgents,
+    skillsDirectories,
     mastraStudioPrefix: `/api/${prefix}/mastra-studio`,
   };
 }
