@@ -33,8 +33,8 @@ npx @zjlab-fe/project-cli create-agent knowledge-agent \
 
 `--prefix` 用于统一生成 `/api/<prefix>/chat`、`/api/<prefix>/conversation` 等业务接口前缀，以及 `/api/<prefix>/mastra-studio`。前缀只能包含小写字母、数字和中划线，不能包含 `/`。没有传入该参数时，CLI 会提示“请输入业务前缀”。
 
-`--agent` 当前支持 `codex`、`trae`、`cursor` 和 `github-copilot`，其中 `github-copilot` 对应 VS Code Copilot。多个 Agent 使用逗号分隔，例如 `--agent=codex,cursor`。没有传入时，CLI 会显示四种选项供多选。生成项目后手动执行 `npm install`，`postinstall` 会扫描 `@mastra/*/dist/docs/SKILL.md`，并链接到所选 Agent 的项目级 Skills 目录。
+`--agent` 当前支持 `codex`、`trae`、`cursor` 和 `github-copilot`，其中 `github-copilot` 对应 VS Code Copilot。多个 Agent 使用逗号分隔，例如 `--agent=codex,cursor`。没有传入时，CLI 会显示四种选项供多选；如果不需要安装 Mastra Skills，不勾选任何 Agent，直接回车即可跳过。生成项目后手动执行 `npm install`，`postinstall` 会扫描 `@mastra/*/dist/docs/SKILL.md`，并链接到所选 Agent 的项目级 Skills 目录；初始化时跳过选择则不会创建链接。
 
-项目生成后也可以运行 `npm run add-skill --agent=codex,cursor`，把已经安装的 Mastra Skills 链接到多个受支持的 Agent。
+项目生成后也可以运行 `npm run add-mastra-skills -- --agent=codex,cursor`，把已经安装的 Mastra Skills 链接到多个受支持的 Agent。
 
 没有传入 `--git-url` 时，CLI 会询问 Git 仓库地址，并允许留空。CLI 不会自动安装依赖，也不会创建 `.env`。

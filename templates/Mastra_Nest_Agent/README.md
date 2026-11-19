@@ -86,16 +86,18 @@ Agent 名称和项目级目录遵循 [`skills` CLI 的支持列表](https://gith
 如需在项目创建后把 Mastra Skills 链接到另一个 Agent，可以运行：
 
 ```bash
-npm run add-skill --agent=codex,cursor
+npm run add-mastra-skills --agent=codex,cursor
 ```
 
 也可以使用 npm 标准的参数分隔写法：
 
 ```bash
-npm run add-skill -- --agent=codex,cursor
+npm run add-mastra-skills -- --agent=codex,cursor
 ```
 
 `--agent` 支持 `codex`、`trae`、`cursor` 和 `github-copilot`。需要安装到多个 Agent 时使用逗号分隔，例如 `--agent=codex,cursor,trae`。
+
+如果创建项目时没有勾选任何 Agent 而直接回车，`postinstall` 会跳过链接。之后仍可通过上述命令指定 Agent 并手动添加。
 
 将环境变量示例复制为本地环境文件：
 

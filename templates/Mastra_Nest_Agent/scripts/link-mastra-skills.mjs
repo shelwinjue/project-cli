@@ -41,7 +41,7 @@ export function readArguments(argv, environment = process.env) {
     .filter(Boolean);
 
   if (agents.length === 0) {
-    throw new Error('Missing --agent.');
+    return { agents: [] };
   }
 
   const uniqueAgents = [...new Set(agents)];
@@ -226,7 +226,13 @@ if (invokedDirectly) {
   } else {
     Promise.resolve()
       .then(() => readArguments(process.argv.slice(2)))
-      .then((options) => linkMastraSkills(options))
+      .then((options) => {
+        if (options.agents.length === 0) {
+          console.log('Skipped Mastra Skills linking: no Agent selected.');
+          return [];
+        }
+        return linkMastraSkills(options);
+      })
       .catch((error) => {
         console.error(error instanceof Error ? error.message : error);
         process.exitCode = 1;

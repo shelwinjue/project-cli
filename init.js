@@ -61,8 +61,7 @@ export const initAgentAction = async (name, option) => {
             name: `${name} (${value})`,
             value
           })),
-          pageSize: 4,
-          validate: (values) => values.length > 0 || '请至少选择一个 Agent'
+          pageSize: 4
         }
       ]);
       codingAgent = answer.codingAgents.join(',');
@@ -109,7 +108,9 @@ export const initAgentAction = async (name, option) => {
     console.log('  npm run start:dev');
     console.log(`  业务 API 前缀：/api/${result.prefix}`);
     console.log(`  Mastra Studio API 前缀：${result.mastraStudioPrefix}`);
-    console.log(`  Mastra Skills：${result.skillsDirectories.join('、')}`);
+    console.log(
+      `  Mastra Skills：${result.skillsDirectories.length > 0 ? result.skillsDirectories.join('、') : '不安装'}`
+    );
 
     if (!gitUrl) {
       console.log();

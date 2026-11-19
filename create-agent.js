@@ -61,13 +61,13 @@ export function validateCodingAgent(codingAgent) {
 }
 
 export function parseCodingAgents(codingAgents) {
-  const values = codingAgents
+  const values = (codingAgents ?? "")
     .split(",")
     .map((value) => value.trim().toLowerCase())
     .filter(Boolean);
 
   if (values.length === 0) {
-    throw new Error("请至少选择一个 Agent");
+    return [];
   }
 
   const uniqueValues = [...new Set(values)];
@@ -195,8 +195,12 @@ export async function createAgentProject({
     ["${YOUR_PROJECT_NAME}", plan.projectName],
     ["${YOUR_DATABASE_NAME}", databaseName],
     ["${YOUR_AGENT_PREFIX}", prefix],
-    ["${YOUR_CODING_AGENT}", normalizedCodingAgents],
-    ["${YOUR_AGENT_SKILLS_DIRECTORY}", skillsDirectories.join(", ")],
+    ["${YOUR_CODING_AGENT}", normalizedCodingAgents || "未选择"],
+    ["${YOUR_CODING_AGENT_ARGUMENT}", normalizedCodingAgents],
+    [
+      "${YOUR_AGENT_SKILLS_DIRECTORY}",
+      skillsDirectories.length > 0 ? skillsDirectories.join(", ") : "不安装",
+    ],
     ["mastra-nest-agent-starter", plan.projectName],
     ["MYSQL_DATABASE=agent_app", `MYSQL_DATABASE=${databaseName}`],
   ];
