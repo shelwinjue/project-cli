@@ -2,6 +2,9 @@ node_modules/
 build/
 coverage/
 .mastra/
+.agents/skills/mastra-*
+.trae/skills/mastra-*
+.cursor/skills/mastra-*
 
 .env
 .env.local

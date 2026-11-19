@@ -10,8 +10,10 @@ import inquirer from 'inquirer';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import clone from './clone.js';
+import { CODING_AGENTS } from './coding-agents.js';
 import {
   createAgentProject,
+  parseCodingAgents,
   prepareAgentProject,
   validateAgentPrefix
 } from './create-agent.js';
@@ -48,10 +50,29 @@ export const initAgentAction = async (name, option) => {
       prefix = answer.prefix.trim();
     }
 
+    let codingAgent = option.agent?.trim();
+    if (codingAgent === undefined) {
+      const answer = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          message: '请选择需要安装 Mastra Skills 的 Agent（可多选）',
+          name: 'codingAgents',
+          choices: CODING_AGENTS.map(({ name, value }) => ({
+            name: `${name} (${value})`,
+            value
+          })),
+          pageSize: 4
+        }
+      ]);
+      codingAgent = answer.codingAgents.join(',');
+    }
+    codingAgent = parseCodingAgents(codingAgent).join(',');
+
     await prepareAgentProject({
       cwd: process.cwd(),
       projectArgument: name,
       prefix,
+      codingAgent,
       templateDirectory: agentTemplateDirectory
     });
 
@@ -73,6 +94,7 @@ export const initAgentAction = async (name, option) => {
       projectArgument: name,
       gitUrl,
       prefix,
+      codingAgent,
       templateDirectory: agentTemplateDirectory
     });
 
@@ -86,6 +108,9 @@ export const initAgentAction = async (name, option) => {
     console.log('  npm run start:dev');
     console.log(`  业务 API 前缀：/api/${result.prefix}`);
     console.log(`  Mastra Studio API 前缀：${result.mastraStudioPrefix}`);
+    console.log(
+      `  Mastra Skills：${result.skillsDirectories.length > 0 ? result.skillsDirectories.join('、') : '不安装'}`
+    );
 
     if (!gitUrl) {
       console.log();

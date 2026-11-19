@@ -16,6 +16,7 @@ program
 program
   .command('create-agent [name]')
   .option('-p, --prefix <prefix>', 'Agent 业务接口路由前缀')
+  .option('-a, --agent <agents>', '安装 Mastra Skills 的 Agent，多个值使用逗号分隔')
   .option('--git-url <url>', '远程 Git 仓库地址')
   .description('创建 NestJS + Mastra Agent 项目')
   .action(initAgentAction);
