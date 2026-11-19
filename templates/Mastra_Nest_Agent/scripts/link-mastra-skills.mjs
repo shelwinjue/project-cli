@@ -1,13 +1,4 @@
-import {
-  access,
-  lstat,
-  mkdir,
-  readFile,
-  readdir,
-  readlink,
-  rm,
-  symlink,
-} from 'node:fs/promises';
+import { access, lstat, mkdir, readFile, readdir, readlink, rm, symlink } from 'node:fs/promises';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,9 +14,7 @@ const agentSkillsDirectories = Object.freeze({
 
 function readSkillName(source, skillFile) {
   const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  const name = frontmatter?.[1].match(
-    /^name:\s*["']?([^"'\r\n]+)["']?\s*$/m,
-  )?.[1];
+  const name = frontmatter?.[1].match(/^name:\s*["']?([^"'\r\n]+)["']?\s*$/m)?.[1];
 
   if (!name || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)) {
     throw new Error(`Invalid or missing skill name in ${skillFile}`);
@@ -41,9 +30,7 @@ function readOption(argv, optionName) {
   }
 
   const optionPrefix = `${optionName}=`;
-  return argv.find((argument) => argument.startsWith(optionPrefix))?.slice(
-    optionPrefix.length,
-  );
+  return argv.find((argument) => argument.startsWith(optionPrefix))?.slice(optionPrefix.length);
 }
 
 export function readArguments(argv, environment = process.env) {
@@ -58,13 +45,9 @@ export function readArguments(argv, environment = process.env) {
   }
 
   const uniqueAgents = [...new Set(agents)];
-  const unsupportedAgents = uniqueAgents.filter(
-    (agent) => !Object.hasOwn(agentSkillsDirectories, agent),
-  );
+  const unsupportedAgents = uniqueAgents.filter((agent) => !Object.hasOwn(agentSkillsDirectories, agent));
   if (unsupportedAgents.length > 0) {
-    throw new Error(
-      `Unsupported Agent: ${unsupportedAgents.join(', ')}. Use codex, trae, cursor, or github-copilot.`,
-    );
+    throw new Error(`Unsupported Agent: ${unsupportedAgents.join(', ')}. Use codex, trae, cursor, or github-copilot.`);
   }
 
   return { agents: uniqueAgents };
@@ -77,11 +60,7 @@ function resolveSkillsDirectory(skillsDirectoryArgument) {
 
   const skillsDirectory = resolve(projectRoot, skillsDirectoryArgument);
   const relativeDirectory = relative(projectRoot, skillsDirectory);
-  if (
-    relativeDirectory === '' ||
-    relativeDirectory === '..' ||
-    relativeDirectory.startsWith(`..${sep}`)
-  ) {
+  if (relativeDirectory === '' || relativeDirectory === '..' || relativeDirectory.startsWith(`..${sep}`)) {
     throw new Error('--skills-dir must be a directory inside the project.');
   }
 
@@ -110,12 +89,7 @@ export async function discoverMastraSkills() {
       continue;
     }
 
-    const docsDirectory = join(
-      mastraScopeDirectory,
-      packageEntry.name,
-      'dist',
-      'docs',
-    );
+    const docsDirectory = join(mastraScopeDirectory, packageEntry.name, 'dist', 'docs');
     const skillFile = join(docsDirectory, 'SKILL.md');
 
     if (!(await pathExists(skillFile))) {
@@ -139,9 +113,7 @@ export async function discoverMastraSkills() {
 }
 
 function resolveLinkTarget(skillsDirectory, target) {
-  const normalizedTarget = target.startsWith('\\\\?\\')
-    ? target.slice(4)
-    : target;
+  const normalizedTarget = target.startsWith('\\\\?\\') ? target.slice(4) : target;
   return resolve(skillsDirectory, normalizedTarget);
 }
 
@@ -196,15 +168,10 @@ async function ensureSkillLink(skillsDirectory, skill) {
 
   if (stats) {
     if (!stats.isSymbolicLink()) {
-      throw new Error(
-        `Cannot link ${skill.packageName}: ${linkPath} already exists and is not a symbolic link.`,
-      );
+      throw new Error(`Cannot link ${skill.packageName}: ${linkPath} already exists and is not a symbolic link.`);
     }
 
-    const currentTarget = resolveLinkTarget(
-      skillsDirectory,
-      await readlink(linkPath),
-    );
+    const currentTarget = resolveLinkTarget(skillsDirectory, await readlink(linkPath));
     if (currentTarget === skill.docsDirectory) {
       console.log(`Mastra skill already linked: ${skill.name}`);
       return;
@@ -213,11 +180,7 @@ async function ensureSkillLink(skillsDirectory, skill) {
     await rm(linkPath, { force: true });
   }
 
-  await symlink(
-    skill.docsDirectory,
-    linkPath,
-    process.platform === 'win32' ? 'junction' : 'dir',
-  );
+  await symlink(skill.docsDirectory, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
   console.log(`Linked ${skill.name} from ${skill.packageName}`);
 }
 
@@ -231,9 +194,7 @@ export async function linkMastraSkills({ agents }) {
 
   const targetsByDirectory = new Map();
   for (const agent of agents) {
-    const skillsDirectory = resolveSkillsDirectory(
-      agentSkillsDirectories[agent],
-    );
+    const skillsDirectory = resolveSkillsDirectory(agentSkillsDirectories[agent]);
     const target = targetsByDirectory.get(skillsDirectory) ?? {
       agents: [],
       skillsDirectory,
@@ -244,34 +205,31 @@ export async function linkMastraSkills({ agents }) {
 
   for (const target of targetsByDirectory.values()) {
     await mkdir(target.skillsDirectory, { recursive: true });
-    await removeStaleManagedLinks(
-      target.skillsDirectory,
-      new Set(skills.map((skill) => skill.name)),
-    );
+    await removeStaleManagedLinks(target.skillsDirectory, new Set(skills.map((skill) => skill.name)));
 
     for (const skill of skills) {
       await ensureSkillLink(target.skillsDirectory, skill);
     }
 
-    console.log(
-      `Linked ${skills.length} embedded Mastra skills for ${target.agents.join(', ')}.`,
-    );
+    console.log(`Linked ${skills.length} embedded Mastra skills for ${target.agents.join(', ')}.`);
   }
 
   return skills;
 }
 
 const invokedDirectly =
-  typeof process !== 'undefined' &&
-  process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+  typeof process !== 'undefined' && process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
 if (invokedDirectly) {
-  Promise.resolve()
-    .then(() => readArguments(process.argv.slice(2)))
-    .then((options) => linkMastraSkills(options))
-    .catch((error) => {
-      console.error(error instanceof Error ? error.message : error);
-      process.exitCode = 1;
-    });
+  if (process.env.SKIP_MASTRA_SKILLS === '1') {
+    console.log('Skipped Mastra Skills linking.');
+  } else {
+    Promise.resolve()
+      .then(() => readArguments(process.argv.slice(2)))
+      .then((options) => linkMastraSkills(options))
+      .catch((error) => {
+        console.error(error instanceof Error ? error.message : error);
+        process.exitCode = 1;
+      });
+  }
 }
